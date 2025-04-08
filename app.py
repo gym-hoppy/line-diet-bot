@@ -69,6 +69,7 @@ def handle_message(event):
         TextSendMessage(text=gpt_reply)
     )
 
-# このファイルが直接実行されたときだけサーバーを動かします（おまじない）
+# Render用：ポート番号を環境変数から取得し、Flaskを起動
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
