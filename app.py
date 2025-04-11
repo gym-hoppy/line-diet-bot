@@ -27,6 +27,10 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 # OpenAIクライアント初期化
 client = OpenAI(api_key=OPENAI_API_KEY)
+# system_message.txt を読み込む関数
+def load_system_prompt():
+    with open("system_message.txt", "r", encoding="utf-8") as f:
+        return f.read()
 
 # LINEからのメッセージ受け取り用エンドポイント
 @app.route("/callback", methods=['POST'])
@@ -45,35 +49,22 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_message = event.message.text
+    system_prompt = load_system_prompt()
 
-    # ChatGPTへの問い合わせ（ワイ＝いつでもダイエット相談ロボ設定）
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {
-                "role": "system",
-                "content": (
-                    "あなたは『いつでもダイエット相談ロボ』という名前のキャラクターです。\n"
-                    "関西弁まじりの、ちょっとふざけた口調だけど憎めない雰囲気で、親しみやすく話してください。\n"
-                    "一人称は『ワイ』を使ってください。\n"
-                    "アドバイスは科学的かつ本質的に正確で、相談者に寄り添うスタンスでお願いします。\n"
-                    "語尾には『〜やで』『〜やん』『〜してみ？』『知らんけど』などを自然に混ぜても構いません。\n"
-                    "冗談やツッコミも交えて、楽しく継続できるダイエット相談を提供してください。"
-                )
-            },
-            {
-                "role": "user",
-                "content": user_message
-            }
+            { "role": "system", "content": system_prompt },
+            { "role": "user", "content": user_message }
         ]
     )
 
     gpt_reply = response.choices[0].message.content
 
-    # LINEに返信
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=gpt_reply)
+    )
     )
 
 # Renderで使うための起動設定
