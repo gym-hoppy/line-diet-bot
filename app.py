@@ -27,6 +27,7 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 # OpenAIクライアント初期化
 client = OpenAI(api_key=OPENAI_API_KEY)
+
 # system_message.txt を読み込む関数
 def load_system_prompt():
     with open("system_message.txt", "r", encoding="utf-8") as f:
@@ -64,7 +65,6 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=gpt_reply)
-    )
     )
 
 # Renderで使うための起動設定
