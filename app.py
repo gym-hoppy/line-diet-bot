@@ -74,7 +74,7 @@ def handle_message(event):
     user_message = event.message.text.strip()
     system_prompt = load_system_prompt()
 
-    # 履歴読み込み（無料は最大2、有料は最大10件）
+    # 履歴読み込み（無料は最大4、有料は最大10件）
     history_limit = 10 if is_premium(user_id) else 4
     user_history = load_user_history(user_id, limit=history_limit)
 
@@ -83,7 +83,7 @@ def handle_message(event):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages,
             temperature=0.8
         )
